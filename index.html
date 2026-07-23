@@ -4,7 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Mohamed Madyan — Full-Stack Engineer</title>
-<meta name="description" content="Mohamed Essam Madyan — full-stack (MERN) engineer in Cairo. I build the machinery behind the interface: routes, auth, sockets, and data that survives every layer." />
+<meta name="description" content="Mohamed Essam Madyan — full-stack (MERN) engineer in Cairo. From backend logic to frontend experience — I build the whole thing." />
+<meta property="og:title" content="Mohamed Madyan — Full-Stack Engineer" />
+<meta property="og:description" content="Full-stack (MERN) engineer in Cairo. Next.js, Node.js, React, MongoDB." />
+<meta property="og:image" content="https://mohamedmadyan56.github.io/profile.jpg" />
+<meta property="og:url" content="https://mohamedmadyan56.github.io" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
 
 <!--
 ==================================================================================
@@ -245,7 +251,29 @@
   .project-links a{font-family:var(--f-mono);font-size:.72rem;color:var(--signal);border:1px solid var(--signal);padding:5px 12px;border-radius:3px;transition:background .25s,color .25s;}
   .project-links a:hover{background:var(--signal);color:var(--ink);}
 
+  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;z-index:25;}
+  .hamburger span{display:block;width:22px;height:2px;background:var(--paper);transition:transform .3s,opacity .3s;border-radius:1px;}
+  .hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+  .hamburger.active span:nth-child(2){opacity:0;}
+  .hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
+  .nav-overlay{position:fixed;inset:0;background:rgba(14,17,22,.97);z-index:15;display:none;flex-direction:column;align-items:center;justify-content:center;gap:28px;}
+  .nav-overlay.open{display:flex;}
+  .nav-overlay a{font-family:var(--f-display);font-size:1.8rem;color:var(--slate);transition:color .3s;}
+  .nav-overlay a:hover{color:var(--signal);}
+
+  .back-top{position:fixed;bottom:28px;right:28px;z-index:30;width:42px;height:42px;border-radius:50%;border:1px solid var(--hairline);background:var(--surface);color:var(--slate);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s,color .3s,border-color .3s;pointer-events:none;}
+  .back-top.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+  .back-top:hover{color:var(--signal);border-color:var(--signal);}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;max-width:640px;}
+  .stat-item{text-align:center;padding:28px 16px;border:1px solid var(--hairline);border-radius:3px;background:var(--surface);}
+  .stat-item .num{font-family:var(--f-display);font-size:2.6rem;font-weight:600;color:var(--signal);line-height:1;}
+  .stat-item .lbl{font-family:var(--f-mono);font-size:.72rem;color:var(--slate);margin-top:10px;letter-spacing:.04em;text-transform:uppercase;}
+  @media (max-width:560px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+
   @media (max-width:720px){
+    .hamburger{display:flex;}
+    nav ul{display:none;}
     :root{--spine-x:16px;--gutter:38px;}
     .stage::before{top:126px;}
   }
@@ -271,7 +299,22 @@
     <li><a href="#learning">Learning</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <button class="hamburger" aria-label="Toggle navigation menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-overlay">
+  <a href="#hero">Home</a>
+  <a href="#work">Work</a>
+  <a href="#services">Services</a>
+  <a href="#stack">Stack</a>
+  <a href="#tech">Tech</a>
+  <a href="#education">Education</a>
+  <a href="#learning">Learning</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<button class="back-top" aria-label="Back to top">↑</button>
 
 <main id="main">
   <!-- ========== HERO ========== -->
@@ -636,6 +679,30 @@
     </div>
   </section>
 
+  <!-- ========== STATS ========== -->
+  <section id="stats" class="reveal">
+    <div class="stage">METRICS <span>· by the numbers</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">By the Numbers</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="num">5+</div>
+        <div class="lbl">Projects Delivered</div>
+      </div>
+      <div class="stat-item">
+        <div class="num">2+</div>
+        <div class="lbl">Years Coding</div>
+      </div>
+      <div class="stat-item">
+        <div class="num">3</div>
+        <div class="lbl">Tech Stacks</div>
+      </div>
+      <div class="stat-item">
+        <div class="num">∞</div>
+        <div class="lbl">Cups of Coffee</div>
+      </div>
+    </div>
+  </section>
+
   <!-- ========== ABOUT ========== -->
   <section id="about" class="reveal">
     <div class="stage">STACK <span>· about me</span></div>
@@ -760,7 +827,7 @@
           </div>
         </div>
       </div>
-      <form class="contact-form" action="mailto:mohamedmadyan1234@gmail.com" method="POST" enctype="text/plain">
+      <form class="contact-form" action="https://formspree.io/f/xjkyrjlb" method="POST">
         <input type="text" name="name" placeholder="Name" required />
         <input type="email" name="email" placeholder="Email" required />
         <input type="text" name="subject" placeholder="Subject" />
@@ -840,8 +907,8 @@
     });
   }, {passive: true});
 
-  // ========== SMOOTH SCROLL POLYFILL FOR OLDER BROWSERS ==========
-  navLinks.forEach(link => {
+  // ========== SMOOTH SCROLL ==========
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
       const targetId = link.getAttribute('href').slice(1);
@@ -851,6 +918,37 @@
       }
     });
   });
+
+  // ========== HAMBURGER MENU ==========
+  const hamburger = document.querySelector('.hamburger');
+  const overlay = document.querySelector('.nav-overlay');
+  if(hamburger && overlay){
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      overlay.classList.toggle('open');
+    });
+    overlay.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        overlay.classList.remove('open');
+      });
+    });
+  }
+
+  // ========== BACK TO TOP ==========
+  const backBtn = document.querySelector('.back-top');
+  if(backBtn){
+    window.addEventListener('scroll', () => {
+      if(window.scrollY > 400){
+        backBtn.classList.add('visible');
+      } else {
+        backBtn.classList.remove('visible');
+      }
+    }, {passive: true});
+    backBtn.addEventListener('click', () => {
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+  }
 
 })();
 </script>
