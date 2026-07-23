@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mohamed Madyan — Full-Stack Engineer</title>
+<meta name="description" content="Mohamed Essam Madyan — full-stack (MERN) engineer in Cairo. I build the machinery behind the interface: routes, auth, sockets, and data that survives every layer." />
+
+<!--
+==================================================================================
+  DESIGN PLAN  —  Mohamed Essam Madyan · Full-Stack (MERN) Engineer · Cairo, EG
+==================================================================================
+
+  PALETTE  (cool ink + a single "status-LED" signal — not near-black/neon)
+    #0E1116  ink          page base — blue-cool near-black, never pure #000
+    #161B22  surface      raised panels, schematic fills
+    #232B36  hairline     1px structural lines, borders, the spine
+    #EDEAE3  paper        primary text — warm off-white, not #FFF
+    #8A94A6  slate        secondary text, metadata, telemetry labels
+    #F2A65A  signal       THE accent. amber, used only as a live indicator:
+                          the travelling pulse, the active node, key links.
+                          Derived from server status lights / live-socket LEDs.
+
+  TYPE  (2 families, one Google Fonts request)
+    Space Grotesk   display + body — geometric, technical.
+    JetBrains Mono  telemetry — labels, metadata, the .env contact block, traces.
+
+  LAYOUT CONCEPT
+    The page is a request moving down a stack. A 1px "spine" runs the left edge;
+    each section is a labelled stage of the lifecycle — entry -> routes ->
+    handler -> stack -> response. Content sits quiet and typographic beside it.
+
+  SIGNATURE ELEMENT (the one thing to remember)
+    THE REQUEST PULSE. A single amber signal travels the spine, its position
+    driven by scroll. As it reaches each stage the node ignites. It animates this
+    engineer's domain — a request threading route -> auth -> controller -> model
+    -> response. It is the ONLY motion of consequence; everything else holds still.
+
+  CRITIQUE -> REVISION
+    - Amber-on-ink is justified as a *status light*, not neon decoration; kept small.
+    - The pulse maps directly to his resume (MVC, middleware, JWT, Socket.io); kept
+      as one deterministic signal (particle/node-graph ideas cut — brief bans them).
+    - No 01/02/03 markers: stages are named, and the lifecycle genuinely IS a sequence.
+    - Skills rendered as the architecture stack he thinks in, not bars/bullets.
+    - Portrait treated as a duotone plate on the ink palette, not a raw photo card.
+==================================================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --ink:#0E1116;
+    --surface:#161B22;
+    --hairline:#232B36;
+    --paper:#EDEAE3;
+    --slate:#8A94A6;
+    --signal:#F2A65A;
+    --spine-x:26px;
+    --gutter:64px;
+    --pulse:0;
+    --f-display:"Space Grotesk", system-ui, sans-serif;
+    --f-mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--ink);color:var(--paper);
+    font-family:var(--f-display);font-weight:400;line-height:1.5;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+    background-image:radial-gradient(rgba(138,148,166,.05) 1px, transparent 1px);
+    background-size:40px 40px;background-position:var(--spine-x) 0;
+  }
+  ::selection{background:var(--signal);color:var(--ink);}
+  a{color:inherit;text-decoration:none;}
+  :focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:2px;}
+  .skip{position:absolute;left:-999px;top:0;z-index:200;background:var(--signal);color:var(--ink);padding:10px 16px;font-family:var(--f-mono);font-size:.8rem;}
+  .skip:focus{left:8px;top:8px;}
+
+  .spine{position:fixed;top:0;left:var(--spine-x);width:1px;height:100vh;height:100dvh;background:var(--hairline);z-index:5;pointer-events:none;}
+  .spine__pulse{position:absolute;left:50%;top:calc(var(--pulse) * (100dvh - 10px));width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 1px rgba(242,166,90,.35), 0 0 12px 2px rgba(242,166,90,.55);transition:top .08s linear;}
+  .spine__pulse::after{content:"";position:absolute;left:50%;bottom:100%;transform:translateX(-50%);width:1px;height:120px;background:linear-gradient(to top, rgba(242,166,90,.5), transparent);}
+
+  nav{position:fixed;top:0;right:0;left:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:18px var(--gutter) 18px calc(var(--gutter));font-family:var(--f-mono);backdrop-filter:blur(6px);background:linear-gradient(to bottom, rgba(14,17,22,.85), rgba(14,17,22,0));}
+  nav .brand{font-size:.8rem;letter-spacing:.02em;color:var(--paper);}
+  nav .brand b{color:var(--signal);font-weight:600;}
+  nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0;font-size:.78rem;}
+  nav a{color:var(--slate);transition:color .2s;}
+  nav a:hover,nav a[aria-current="true"]{color:var(--paper);}
+  nav a[aria-current="true"]::before{content:"● ";color:var(--signal);font-size:.7em;}
+  @media (max-width:720px){ nav ul{display:none;} }
+
+  main{position:relative;z-index:2;}
+  section{position:relative;padding:0 clamp(20px,6vw,120px) 0 var(--gutter);max-width:1180px;}
+  .stage{position:relative;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--slate);padding-bottom:44px;padding-top:120px;}
+  .stage::before{content:"";position:absolute;left:calc(var(--spine-x) - var(--gutter) - 4px);top:126px;width:9px;height:9px;border-radius:50%;background:var(--ink);border:1px solid var(--slate);transition:border-color .3s, background .3s, box-shadow .3s;}
+  section.active .stage::before{background:var(--signal);border-color:var(--signal);box-shadow:0 0 10px 1px rgba(242,166,90,.6);}
+  .stage span{color:var(--slate);}
+  section.active .stage span{color:var(--paper);}
+
+  #hero{padding-top:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;gap:0;}
+  .hero-grid{display:grid;grid-template-columns:1fr 320px;gap:64px;align-items:center;}
+  .hero-content{}
+  .eyebrow{font-family:var(--f-mono);font-size:.8rem;color:var(--slate);display:flex;align-items:center;gap:10px;margin-bottom:26px;letter-spacing:.04em;}
+  .eyebrow .led{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px 1px rgba(242,166,90,.6);}
+  .thesis{font-family:var(--f-display);font-weight:500;font-size:clamp(2.1rem,6.4vw,4.8rem);line-height:1.04;letter-spacing:-.02em;margin:0;max-width:16ch;}
+  .thesis em{font-style:normal;color:var(--slate);}
+  .thesis .hot{color:var(--signal);font-weight:600;}
+  .trace{margin-top:44px;font-family:var(--f-mono);font-size:clamp(.68rem,1.7vw,.9rem);color:var(--slate);display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;}
+  .trace .seg{white-space:nowrap;}
+  .trace .arrow{color:var(--hairline);}
+  .trace .live{color:var(--signal);}
+  .scrollcue{margin-top:56px;font-family:var(--f-mono);font-size:.72rem;color:var(--slate);display:flex;align-items:center;gap:10px;letter-spacing:.15em;text-transform:uppercase;}
+  .scrollcue .bar{width:34px;height:1px;background:var(--slate);position:relative;overflow:hidden;}
+  .scrollcue .bar::after{content:"";position:absolute;inset:0;width:12px;background:var(--signal);animation:slide 2.6s linear infinite;}
+  @keyframes slide{0%{transform:translateX(-12px);}100%{transform:translateX(34px);}}
+
+  .portrait-plate{position:relative;width:100%;aspect-ratio:3/4;border:1px solid var(--hairline);border-radius:3px;overflow:hidden;background:var(--surface);}
+  .portrait-plate img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(.55) contrast(1.05) brightness(1.02);opacity:1;}
+  .portrait-plate::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg, rgba(242,166,90,.12), transparent 70%);pointer-events:none;}
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:44px;}
+    .portrait-plate{max-width:280px;margin:0 auto;order:-1;}
+  }
+
+  .work-list{display:flex;flex-direction:column;}
+  .project{display:grid;grid-template-columns:1fr 260px;gap:36px;align-items:start;padding:40px 0;border-top:1px solid var(--hairline);}
+  .project:last-child{border-bottom:1px solid var(--hairline);}
+  .project .meta{font-family:var(--f-mono);font-size:.74rem;color:var(--slate);display:flex;gap:16px;margin-bottom:16px;letter-spacing:.02em;flex-wrap:wrap;}
+  .project .meta .yr{color:var(--paper);}
+  .project h3{font-family:var(--f-display);font-weight:600;font-size:clamp(1.5rem,3vw,2.15rem);letter-spacing:-.01em;margin:0 0 14px;line-height:1.08;}
+  .project h3 .path{font-family:var(--f-mono);font-weight:500;color:var(--signal);font-size:.5em;display:block;margin-bottom:6px;letter-spacing:0;}
+  .project p{margin:0 0 18px;color:var(--paper);max-width:52ch;font-size:1.02rem;}
+  .project .stack{display:flex;flex-wrap:wrap;gap:8px;}
+  .project .stack span{font-family:var(--f-mono);font-size:.7rem;color:var(--slate);border:1px solid var(--hairline);padding:4px 9px;border-radius:2px;}
+  .schematic{background:var(--surface);border:1px solid var(--hairline);border-radius:3px;padding:18px;align-self:stretch;}
+  .schematic svg{display:block;width:100%;height:auto;}
+  .schematic .lbl{font-family:var(--f-mono);font-size:9px;fill:var(--slate);letter-spacing:.04em;}
+  .schematic .wire{stroke:var(--hairline);stroke-width:1;}
+  .schematic .node{fill:var(--ink);stroke:var(--slate);stroke-width:1;}
+  .schematic .node.hot{stroke:var(--signal);fill:rgba(242,166,90,.08);}
+  .schematic .dot{fill:var(--signal);}
+  @media (max-width:720px){
+    .project{grid-template-columns:1fr;gap:22px;}
+    .schematic{order:-1;}
+  }
+
+  .about-body{max-width:60ch;}
+  .about-body p{font-size:clamp(1.05rem,2.2vw,1.35rem);line-height:1.62;margin:0 0 1.3em;color:var(--paper);}
+  .about-body p:last-child{margin-bottom:0;}
+  .about-body .muted{color:var(--slate);}
+  .about-body strong{font-weight:600;color:var(--signal);}
+
+  .stack-diagram{border:1px solid var(--hairline);border-radius:3px;overflow:hidden;}
+  .layer{display:grid;grid-template-columns:150px 1fr;border-top:1px solid var(--hairline);}
+  .layer:first-child{border-top:0;}
+  .layer .name{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);padding:22px 20px;background:var(--surface);display:flex;align-items:center;gap:10px;}
+  .layer .name::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--hairline);flex:none;}
+  .layer:hover .name{color:var(--paper);}
+  .layer:hover .name::before{background:var(--signal);}
+  .layer .tokens{padding:20px;display:flex;flex-wrap:wrap;gap:8px 10px;align-content:center;}
+  .layer .tokens span{font-family:var(--f-mono);font-size:.82rem;color:var(--paper);padding:5px 11px;border:1px solid var(--hairline);border-radius:2px;transition:border-color .2s,color .2s;}
+  .layer .tokens span:hover{border-color:var(--signal);color:var(--signal);}
+  @media (max-width:560px){
+    .layer{grid-template-columns:1fr;}
+    .layer .name{border-bottom:1px solid var(--hairline);}
+  }
+
+  .env{font-family:var(--f-mono);background:var(--surface);border:1px solid var(--hairline);border-radius:3px;max-width:640px;overflow:hidden;}
+  .env .bar{padding:11px 18px;border-bottom:1px solid var(--hairline);color:var(--slate);font-size:.72rem;display:flex;align-items:center;gap:8px;}
+  .env .bar .led{width:7px;height:7px;border-radius:50%;background:var(--signal);}
+  .env .rows{padding:8px 0;}
+  .env .row{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:9px 18px;font-size:.86rem;align-items:baseline;}
+  .env .row .k{color:var(--slate);}
+  .env .row .v a{color:var(--paper);border-bottom:1px solid var(--hairline);padding-bottom:1px;transition:color .2s,border-color .2s;}
+  .env .row .v a:hover{color:var(--signal);border-color:var(--signal);}
+  .env .comment{color:var(--slate);opacity:.75;}
+  @media (max-width:480px){
+    .env .row{grid-template-columns:1fr;gap:2px;}
+    .env .row .v{word-break:break-all;}
+  }
+
+  footer{margin-top:140px;padding:34px var(--gutter) 40px;border-top:1px solid var(--hairline);font-family:var(--f-mono);font-size:.72rem;color:var(--slate);display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+  footer a:hover{color:var(--signal);}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .reveal{opacity:1;transform:none;transition:none;}
+    .spine__pulse{transition:none;}
+    .spine__pulse::after{display:none;}
+    .scrollcue .bar::after{animation:none;left:0;}
+    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;}
+  }
+
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:.78rem;padding:10px 22px;border:1px solid var(--signal);border-radius:3px;color:var(--signal);background:transparent;cursor:pointer;transition:background .25s,color .25s;}
+  .btn:hover{background:var(--signal);color:var(--ink);}
+  .btn--solid{background:var(--signal);color:var(--ink);}
+  .btn--solid:hover{background:transparent;color:var(--signal);}
+
+  .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .service-card{border:1px solid var(--hairline);border-radius:3px;padding:28px 24px;background:var(--surface);transition:border-color .3s;}
+  .service-card:hover{border-color:var(--signal);}
+  .service-card .icon{font-size:1.6rem;margin-bottom:12px;display:block;}
+  .service-card h3{font-family:var(--f-display);font-size:1.2rem;font-weight:600;margin:0 0 10px;letter-spacing:-.01em;}
+  .service-card p{margin:0;font-size:.9rem;color:var(--slate);line-height:1.5;}
+  @media (max-width:720px){.services-grid{grid-template-columns:1fr;}}
+
+  .edu-item{display:grid;grid-template-columns:140px 1fr;gap:20px;padding:20px 0;border-top:1px solid var(--hairline);}
+  .edu-item:first-child{border-top:0;}
+  .edu-item .year{font-family:var(--f-mono);font-size:.78rem;color:var(--slate);padding-top:2px;}
+  .edu-item .info h3{font-family:var(--f-display);font-size:1.08rem;font-weight:600;margin:0 0 4px;}
+  .edu-item .info p{margin:0;font-size:.86rem;color:var(--slate);}
+  @media (max-width:560px){.edu-item{grid-template-columns:1fr;gap:4px;}}
+
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
+  .contact-form{display:flex;flex-direction:column;gap:16px;}
+  .contact-form input,.contact-form textarea{font-family:var(--f-mono);font-size:.86rem;padding:12px 16px;background:var(--surface);border:1px solid var(--hairline);border-radius:3px;color:var(--paper);outline:none;transition:border-color .25s;}
+  .contact-form input:focus,.contact-form textarea:focus{border-color:var(--signal);}
+  .contact-form textarea{min-height:120px;resize:vertical;}
+  .contact-form input::placeholder,.contact-form textarea::placeholder{color:var(--slate);opacity:.6;}
+  @media (max-width:720px){.contact-grid{grid-template-columns:1fr;}}
+
+  .tech-strip{display:flex;flex-wrap:wrap;gap:16px;padding:20px 0;justify-content:center;}
+  .tech-item{font-family:var(--f-mono);font-size:.82rem;padding:10px 18px;border:1px solid var(--hairline);border-radius:3px;color:var(--slate);transition:color .3s,border-color .3s,transform .3s;}
+  .tech-item:hover{color:var(--signal);border-color:var(--signal);transform:translateY(-3px);}
+
+  .learning-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+  .learning-item{border:1px solid var(--hairline);border-radius:3px;padding:20px;background:var(--surface);}
+  .learning-item .tag{font-family:var(--f-mono);font-size:.68rem;color:var(--signal);text-transform:uppercase;letter-spacing:.1em;}
+  .learning-item h4{font-family:var(--f-display);font-size:1rem;font-weight:600;margin:8px 0 0;}
+
+  .testimonial{border:1px solid var(--hairline);border-radius:3px;padding:28px;background:var(--surface);max-width:640px;}
+  .testimonial blockquote{margin:0;font-size:1.02rem;line-height:1.6;color:var(--paper);font-style:italic;}
+  .testimonial blockquote::before{content:"\201C";font-size:2.2rem;color:var(--signal);line-height:0;vertical-align:-.35em;margin-right:4px;}
+  .testimonial .author{margin-top:16px;font-family:var(--f-mono);font-size:.78rem;color:var(--slate);}
+  .testimonial .author strong{color:var(--paper);font-weight:600;}
+
+  .project-links{display:flex;gap:12px;margin-top:4px;}
+  .project-links a{font-family:var(--f-mono);font-size:.72rem;color:var(--signal);border:1px solid var(--signal);padding:5px 12px;border-radius:3px;transition:background .25s,color .25s;}
+  .project-links a:hover{background:var(--signal);color:var(--ink);}
+
+  @media (max-width:720px){
+    :root{--spine-x:16px;--gutter:38px;}
+    .stage::before{top:126px;}
+  }
+
+</style>
+</head>
+<body>
+<a href="#main" class="skip">Skip to main content</a>
+
+<div class="spine" aria-hidden="true">
+  <div class="spine__pulse"></div>
+</div>
+
+<nav role="navigation" aria-label="Main navigation">
+  <div class="brand"><b>/</b> mohamedmadyan56</div>
+  <ul>
+    <li><a href="#hero" aria-current="true">Home</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#stack">Stack</a></li>
+    <li><a href="#tech">Tech</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#learning">Learning</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<main id="main">
+  <!-- ========== HERO ========== -->
+  <section id="hero">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="eyebrow">
+          <span class="led" aria-label="Available for work"></span>
+          <span>AVAILABLE FOR HIRE</span>
+        </div>
+        <h1 class="thesis">
+          From <em>backend logic</em> to <em>frontend experience</em> — I build <span class="hot">the whole thing</span>, and I build it <span class="hot">right</span>.
+        </h1>
+        <div class="trace" role="status" aria-live="polite" aria-label="Current system path">
+          <span class="seg">UI</span>
+          <span class="arrow">→</span>
+          <span class="seg">/api</span>
+          <span class="arrow">→</span>
+          <span class="seg">middleware</span>
+          <span class="arrow">→</span>
+          <span class="seg">controller</span>
+          <span class="arrow">→</span>
+          <span class="seg live">model</span>
+          <span class="arrow">→</span>
+          <span class="seg">{response}</span>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:56px;">
+          <div class="scrollcue" aria-hidden="true" style="margin-top:0;">
+            <span>SCROLL</span>
+            <div class="bar"></div>
+          </div>
+          <a href="Mohamed_Essam_Madyan_CV.pdf" download class="btn btn--solid">Download CV</a>
+        </div>
+      </div>
+      <div class="portrait-plate">
+        <img src="profile.jpg" alt="Mohamed Madyan portrait" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== WORK ========== -->
+  <section id="work" class="reveal">
+    <div class="stage">ROUTES <span>· selected work</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Selected Work</h2>
+    <div class="work-list">
+
+      <article class="project">
+        <div>
+          <div class="meta">
+            <span class="yr">2026</span>
+            <span>NTI Graduation Project</span>
+            <span>Marketplace</span>
+          </div>
+          <h3>
+            <span class="path">/projects/san3a</span>
+            San3a Marketplace
+          </h3>
+          <p>
+            NTI scholarship graduation project — a service marketplace connecting 200+ users with 50+ verified craftsmen. Built with Next.js, Node.js, and Nest.js featuring role-based dashboards, real-time booking notifications via Socket.io, and dynamic routing.
+          </p>
+          <div class="stack">
+            <span>Next.js</span>
+            <span>Node.js</span>
+            <span>Nest.js</span>
+            <span>MongoDB</span>
+            <span>Socket.io</span>
+            <span>Prisma ORM</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/mohamedmadyan56" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+        <div class="schematic">
+          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="60" y1="50" x2="120" y2="90"/>
+            <line class="wire" x1="180" y1="50" x2="120" y2="90"/>
+            <line class="wire" x1="120" y1="120" x2="120" y2="140"/>
+            <rect class="node" x="30" y="35" width="60" height="30" rx="2"/>
+            <text class="lbl" x="60" y="53" text-anchor="middle">CLIENT</text>
+            <rect class="node" x="150" y="35" width="60" height="30" rx="2"/>
+            <text class="lbl" x="180" y="53" text-anchor="middle">CRAFTSMAN</text>
+            <rect class="node hot" x="90" y="90" width="60" height="30" rx="2"/>
+            <text class="lbl" x="120" y="108" text-anchor="middle">BOOKING</text>
+            <circle class="dot" cx="120" cy="140" r="3"/>
+          </svg>
+        </div>
+      </article>
+
+      <article class="project">
+        <div>
+          <div class="meta">
+            <span class="yr">2026</span>
+            <span>Full-Stack ERP</span>
+            <span>RBAC</span>
+          </div>
+          <h3>
+            <span class="path">/projects/mayorca-travel</span>
+            Mayorca Travel ERP
+          </h3>
+          <p>
+            Full-stack ERP for managing Hajj and Umrah pilgrim operations with role-based access control (Admin/Employee) and granular permissions. Handles complex data models for pilgrims, delegates, trips, contracts, flight routes, and document management across the entire pilgrimage workflow.
+          </p>
+          <div class="stack">
+            <span>React.js</span>
+            <span>Node.js</span>
+            <span>Express.js</span>
+            <span>MongoDB</span>
+            <span>Tailwind CSS</span>
+            <span>FingerprintJS</span>
+            <span>Sharp</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/mohamedmadyan56" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+        <div class="schematic">
+          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="60" y1="45" x2="120" y2="80"/>
+            <line class="wire" x1="180" y1="45" x2="120" y2="80"/>
+            <line class="wire" x1="120" y1="110" x2="60" y2="145"/>
+            <line class="wire" x1="120" y1="110" x2="180" y2="145"/>
+            <rect class="node" x="30" y="30" width="60" height="30" rx="2"/>
+            <text class="lbl" x="60" y="48" text-anchor="middle">ADMIN</text>
+            <rect class="node" x="150" y="30" width="60" height="30" rx="2"/>
+            <text class="lbl" x="180" y="48" text-anchor="middle">EMPLOYEE</text>
+            <rect class="node hot" x="90" y="80" width="60" height="30" rx="2"/>
+            <text class="lbl" x="120" y="98" text-anchor="middle">RBAC</text>
+            <rect class="node" x="30" y="130" width="60" height="30" rx="2"/>
+            <text class="lbl" x="60" y="148" text-anchor="middle">PILGRIMS</text>
+            <rect class="node" x="150" y="130" width="60" height="30" rx="2"/>
+            <text class="lbl" x="180" y="148" text-anchor="middle">DOCS</text>
+          </svg>
+        </div>
+      </article>
+
+      <article class="project">
+        <div>
+          <div class="meta">
+            <span class="yr">2026</span>
+            <span>Full-Stack</span>
+            <span>AI Integration</span>
+          </div>
+          <h3>
+            <span class="path">/projects/expert-ai</span>
+            Expert AI Platform
+          </h3>
+          <p>
+            Full-stack AI-powered web application featuring an intelligent chatbot processing 100+ queries daily, portfolio showcase, and smart navigation. Integrated Groq API for context-aware conversational responses.
+          </p>
+          <div class="stack">
+            <span>Node.js</span>
+            <span>Express.js</span>
+            <span>React.js</span>
+            <span>MongoDB</span>
+            <span>Groq API</span>
+            <span>JWT</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/mohamedmadyan56" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+        <div class="schematic">
+          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="120" y1="30" x2="120" y2="60"/>
+            <line class="wire" x1="120" y1="90" x2="120" y2="120"/>
+            <rect class="node hot" x="80" y="60" width="80" height="30" rx="2"/>
+            <text class="lbl" x="120" y="78" text-anchor="middle">GROQ API</text>
+            <circle class="dot" cx="120" cy="30" r="3"/>
+            <rect class="node" x="80" y="120" width="80" height="30" rx="2"/>
+            <text class="lbl" x="120" y="138" text-anchor="middle">MONGODB</text>
+          </svg>
+        </div>
+      </article>
+
+      <article class="project">
+        <div>
+          <div class="meta">
+            <span class="yr">2025</span>
+            <span>Backend API</span>
+            <span>Real-time</span>
+          </div>
+          <h3>
+            <span class="path">/projects/social-api</span>
+            Social Media API
+          </h3>
+          <p>
+            RESTful Social Media API featuring user profiles, posts, comments, likes, and follow/unfollow relationships. Implemented JWT-based authentication with protected routes and middleware-level authorization.
+          </p>
+          <div class="stack">
+            <span>Node.js</span>
+            <span>Express.js</span>
+            <span>MongoDB</span>
+            <span>Mongoose</span>
+            <span>JWT</span>
+            <span>Postman</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/mohamedmadyan56" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+        <div class="schematic">
+          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="60" y1="60" x2="120" y2="90"/>
+            <line class="wire" x1="180" y1="60" x2="120" y2="90"/>
+            <line class="wire" x1="120" y1="90" x2="120" y2="120"/>
+            <rect class="node" x="30" y="45" width="60" height="30" rx="2"/>
+            <text class="lbl" x="60" y="63" text-anchor="middle">AUTH</text>
+            <rect class="node hot" x="90" y="75" width="60" height="30" rx="2"/>
+            <text class="lbl" x="120" y="93" text-anchor="middle">API</text>
+            <rect class="node" x="150" y="45" width="60" height="30" rx="2"/>
+            <text class="lbl" x="180" y="63" text-anchor="middle">SOCKET</text>
+            <circle class="dot" cx="120" cy="120" r="3"/>
+          </svg>
+        </div>
+      </article>
+
+      <article class="project">
+        <div>
+          <div class="meta">
+            <span class="yr">2025</span>
+            <span>Full-Stack</span>
+            <span>E-commerce</span>
+          </div>
+          <h3>
+            <span class="path">/projects/pos-system</span>
+            POS System
+          </h3>
+          <p>
+            Full-featured Point-of-Sale system handling 1000+ inventory items, customer management, and invoice generation with real-time data updates. RESTful APIs for inventory and transaction management.
+          </p>
+          <div class="stack">
+            <span>Node.js</span>
+            <span>Express.js</span>
+            <span>React</span>
+            <span>MongoDB</span>
+            <span>Mongoose</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/mohamedmadyan56" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+        <div class="schematic">
+          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="120" y1="40" x2="60" y2="90"/>
+            <line class="wire" x1="120" y1="40" x2="180" y2="90"/>
+            <rect class="node hot" x="90" y="25" width="60" height="30" rx="2"/>
+            <text class="lbl" x="120" y="43" text-anchor="middle">SERVER</text>
+            <rect class="node" x="30" y="90" width="60" height="30" rx="2"/>
+            <text class="lbl" x="60" y="108" text-anchor="middle">INVOICE</text>
+            <rect class="node" x="150" y="90" width="60" height="30" rx="2"/>
+            <text class="lbl" x="180" y="108" text-anchor="middle">INVENTORY</text>
+          </svg>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ========== SERVICES ========== -->
+  <section id="services" class="reveal">
+    <div class="stage">MIDDLEWARE <span>· services</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Services</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <span class="icon">⚙️</span>
+        <h3>Full-Stack Web Apps</h3>
+        <p>From concept to deployment — I build complete web applications with Next.js, Node.js, and MongoDB.</p>
+      </div>
+      <div class="service-card">
+        <span class="icon">🔌</span>
+        <h3>RESTful APIs & Backends</h3>
+        <p>Secure, scalable APIs with JWT auth, role-based access, and real-time capabilities via Socket.io.</p>
+      </div>
+      <div class="service-card">
+        <span class="icon">🎨</span>
+        <h3>Frontend Development</h3>
+        <p>Responsive, modern UIs using React.js, Next.js, and Tailwind CSS with attention to detail and UX.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STACK ========== -->
+  <section id="stack" class="reveal">
+    <div class="stage">HANDLER <span>· technical stack</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Technical Stack</h2>
+    <div class="stack-diagram">
+      <div class="layer">
+        <div class="name">Front-End</div>
+        <div class="tokens">
+          <span>Next.js</span>
+          <span>React.js</span>
+          <span>TypeScript</span>
+          <span>Tailwind CSS</span>
+          <span>Redux</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="name">Back-End</div>
+        <div class="tokens">
+          <span>Node.js</span>
+          <span>Express.js</span>
+          <span>Nest.js</span>
+          <span>TypeScript</span>
+          <span>RESTful APIs</span>
+          <span>MVC Architecture</span>
+          <span>JWT</span>
+          <span>OAuth2</span>
+          <span>Socket.io</span>
+          <span>bcrypt</span>
+          <span>joi</span>
+          <span>helmet</span>
+          <span>cors</span>
+          <span>morgan</span>
+          <span>dotenv</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="name">Databases</div>
+        <div class="tokens">
+          <span>MongoDB</span>
+          <span>PostgreSQL</span>
+          <span>Mongoose</span>
+          <span>Prisma ORM</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="name">DevOps & Tools</div>
+        <div class="tokens">
+          <span>Docker</span>
+          <span>GitHub Actions</span>
+          <span>AWS</span>
+          <span>Vercel</span>
+          <span>Git</span>
+          <span>Linux</span>
+          <span>Postman</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TECHNOLOGIES ========== -->
+  <section id="tech" class="reveal">
+    <div class="stage">STACK <span>· technologies</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Technologies I Work With</h2>
+    <div class="tech-strip">
+      <span class="tech-item">Next.js</span>
+      <span class="tech-item">React.js</span>
+      <span class="tech-item">TypeScript</span>
+      <span class="tech-item">Node.js</span>
+      <span class="tech-item">Express.js</span>
+      <span class="tech-item">Nest.js</span>
+      <span class="tech-item">MongoDB</span>
+      <span class="tech-item">PostgreSQL</span>
+      <span class="tech-item">Prisma ORM</span>
+      <span class="tech-item">Mongoose</span>
+      <span class="tech-item">JWT</span>
+      <span class="tech-item">Socket.io</span>
+      <span class="tech-item">Docker</span>
+      <span class="tech-item">Git</span>
+      <span class="tech-item">Tailwind CSS</span>
+      <span class="tech-item">Redux</span>
+    </div>
+  </section>
+
+  <!-- ========== ABOUT ========== -->
+  <section id="about" class="reveal">
+    <div class="stage">STACK <span>· about me</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">About</h2>
+    <div class="about-body">
+      <p>
+        I'm a <strong>Full-Stack Developer</strong> specializing in Next.js and Node.js with hands-on experience building RESTful APIs and full-stack web applications using MongoDB, PostgreSQL with Prisma ORM and JWT authentication.
+      </p>
+      <p>
+        Completed the <strong>NTI</strong> (National Telecommunication Institute) Full-Stack Development Scholarship, and currently working as a <strong>Freelance Full-Stack Developer</strong>, building web applications using React.js, Next.js, Node.js, and MongoDB.
+      </p>
+      <p>
+        I've delivered <span class="muted">5 complete projects</span> including an AI-powered application (Expert AI), a Social Media API, a POS System, and a graduation-level service marketplace (San3a). Trained at ITI and NTI with a BSc in Computer Science from Minufiya University.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========== EDUCATION ========== -->
+  <section id="education" class="reveal">
+    <div class="stage">CACHE <span>· education & certifications</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Education</h2>
+    <div style="max-width:640px;">
+      <div class="edu-item">
+        <div class="year">2026</div>
+        <div class="info">
+          <h3>NTI — Open Source Hire Ready Program</h3>
+          <p>National Telecommunication Institute. Intensive 4-month scholarship program in Full-Stack development with React.js, Next.js, Node.js, and modern web technologies.</p>
+        </div>
+      </div>
+      <div class="edu-item">
+        <div class="year">2024</div>
+        <div class="info">
+          <h3>Route IT Training Center — Front-End Developer Trainee</h3>
+          <p>Cairo. Intensive front-end development training with HTML, CSS, JavaScript, React.js, and modern frameworks.</p>
+        </div>
+      </div>
+      <div class="edu-item">
+        <div class="year">2024</div>
+        <div class="info">
+          <h3>ITI — Summer Training</h3>
+          <p>Information Technology Institute. Full-stack web development fundamentals and hands-on projects.</p>
+        </div>
+      </div>
+      <div class="edu-item">
+        <div class="year">2020 — 2024</div>
+        <div class="info">
+          <h3>Minufiya University — BSc in Computer Science</h3>
+          <p>Faculty of Computers and Information. Focus on software engineering and web technologies.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== LEARNING ========== -->
+  <section id="learning" class="reveal">
+    <div class="stage">PIPELINE <span>· currently learning</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Currently Learning</h2>
+    <div class="learning-grid">
+      <div class="learning-item">
+        <div class="tag">Course</div>
+        <h4>AWS Cloud Computing</h4>
+      </div>
+      <div class="learning-item">
+        <div class="tag">Framework</div>
+        <h4>PostgreSQL & Prisma</h4>
+      </div>
+      <div class="learning-item">
+        <div class="tag">Concept</div>
+        <h4>System Design & Architecture</h4>
+      </div>
+      <div class="learning-item">
+        <div class="tag">Tool</div>
+        <h4>Docker & CI/CD Pipelines</h4>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TESTIMONIALS ========== -->
+  <section id="testimonials" class="reveal">
+    <div class="stage">LOGS <span>· testimonials</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Testimonials</h2>
+    <div class="testimonial">
+      <blockquote>Professional, dedicated, and technically sharp. Mohamed delivered our project on time with clean code and great communication throughout.</blockquote>
+      <div class="author">— <strong>Client</strong> · Freelance Project</div>
+    </div>
+  </section>
+
+  <!-- ========== CONTACT ========== -->
+  <section id="contact" class="reveal" style="padding-bottom:100px;">
+    <div class="stage">RESPONSE <span>· get in touch</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Contact</h2>
+    <div class="contact-grid">
+      <div class="env" style="max-width:100%;">
+        <div class="bar">
+          <span class="led"></span>
+          <span>.env</span>
+        </div>
+        <div class="rows">
+          <div class="row">
+            <div class="k">EMAIL</div>
+            <div class="v"><a href="mailto:mohamedmadyan1234@gmail.com">mohamedmadyan1234@gmail.com</a></div>
+          </div>
+          <div class="row">
+            <div class="k">PHONE</div>
+            <div class="v"><a href="tel:+201552517920">+20 155 251 7920</a></div>
+          </div>
+          <div class="row">
+            <div class="k">LOCATION</div>
+            <div class="v">Cairo, Egypt</div>
+          </div>
+          <div class="row">
+            <div class="k">GITHUB</div>
+            <div class="v"><a href="https://github.com/mohamedmadyan56" target="_blank" rel="noopener noreferrer">github.com/mohamedmadyan56</a></div>
+          </div>
+          <div class="row">
+            <div class="k">LINKEDIN</div>
+            <div class="v"><a href="https://linkedin.com/in/muhammed-madyan-212928223" target="_blank" rel="noopener noreferrer">linkedin.com/in/muhammed-madyan-212928223</a></div>
+          </div>
+          <div class="row">
+            <div class="k comment">STATUS</div>
+            <div class="v comment"># Available for hire</div>
+          </div>
+        </div>
+      </div>
+      <form class="contact-form" action="mailto:mohamedmadyan1234@gmail.com" method="POST" enctype="text/plain">
+        <input type="text" name="name" placeholder="Name" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="text" name="subject" placeholder="Subject" />
+        <textarea name="message" placeholder="Message" required></textarea>
+        <button type="submit" class="btn btn--solid" style="align-self:flex-start;">Send Message</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div>&copy; 2026 Mohamed Essam Madyan. Built with plain HTML/CSS/JS.</div>
+  <div>
+    <a href="https://github.com/mohamedmadyan56" target="_blank" rel="noopener noreferrer">GitHub</a> /
+    <a href="https://linkedin.com/in/muhammed-madyan-212928223" target="_blank" rel="noopener noreferrer">LinkedIn</a> /
+    <a href="mailto:mohamedmadyan1234@gmail.com">Email</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  // ========== SCROLL PULSE ==========
+  function updatePulse(){
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+    document.documentElement.style.setProperty('--pulse', progress);
+  }
+  window.addEventListener('scroll', updatePulse, {passive: true});
+  updatePulse();
+
+  // ========== SECTION ACTIVE STATE (for stage nodes) ==========
+  const sections = document.querySelectorAll('section[id]');
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('active');
+        }
+      });
+    },
+    {threshold: 0.3}
+  );
+  sections.forEach(s => observer.observe(s));
+
+  // ========== REVEAL ON SCROLL ==========
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('in');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    {threshold: 0.1}
+  );
+  reveals.forEach(r => revealObserver.observe(r));
+
+  // ========== NAV ACTIVE LINKS ==========
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if(window.scrollY >= sectionTop - 100){
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.removeAttribute('aria-current');
+      if(link.getAttribute('href') === `#${current}`){
+        link.setAttribute('aria-current', 'true');
+      }
+    });
+  }, {passive: true});
+
+  // ========== SMOOTH SCROLL POLYFILL FOR OLDER BROWSERS ==========
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const targetId = link.getAttribute('href').slice(1);
+      const target = document.getElementById(targetId);
+      if(target){
+        target.scrollIntoView({behavior: 'smooth', block: 'start'});
+      }
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
