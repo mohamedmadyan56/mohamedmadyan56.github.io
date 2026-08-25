@@ -356,6 +356,24 @@
   .nav-overlay a{font-family:var(--f-display);font-size:1.8rem;color:var(--slate);transition:color .3s;}
   .nav-overlay a:hover{color:var(--signal);}
 
+  .certs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:860px;}
+  .cert-card{border:1px solid var(--hairline);border-radius:6px;overflow:hidden;background:var(--surface);cursor:pointer;transition:border-color .3s,transform .3s,box-shadow .3s;}
+  .cert-card:hover{border-color:var(--signal);transform:translateY(-3px);box-shadow:0 8px 32px rgba(60,249,126,.12);}
+  .cert-card img{display:block;width:100%;height:220px;object-fit:cover;object-position:top;border-bottom:1px solid var(--hairline);transition:filter .3s;}
+  .cert-card:hover img{filter:brightness(1.05);}
+  .cert-card .cinfo{padding:16px 18px;}
+  .cert-card .issuer{font-family:var(--f-mono);font-size:.68rem;color:var(--signal);letter-spacing:.08em;text-transform:uppercase;}
+  .cert-card h3{font-family:var(--f-display);font-size:1.02rem;font-weight:600;margin:6px 0 6px;letter-spacing:-.01em;line-height:1.25;}
+  .cert-card .meta{font-family:var(--f-mono);font-size:.73rem;color:var(--slate);line-height:1.5;}
+  .cert-card .view{font-family:var(--f-mono);font-size:.7rem;color:var(--signal);margin-top:10px;display:inline-flex;align-items:center;gap:6px;opacity:.8;}
+  .cert-card:hover .view{opacity:1;}
+  @media (max-width:640px){.certs-grid{grid-template-columns:1fr;}.cert-card img{height:200px;}}
+  .cert-modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(8,12,16,.92);backdrop-filter:blur(6px);padding:24px;}
+  .cert-modal.open{display:flex;}
+  .cert-modal img{max-width:min(95vw,1100px);max-height:92vh;object-fit:contain;border-radius:4px;box-shadow:0 16px 48px rgba(0,0,0,.6);}
+  .cert-modal .close{position:absolute;top:18px;right:22px;width:42px;height:42px;border-radius:50%;border:1px solid var(--hairline);background:var(--surface);color:var(--paper);font-size:1.5rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .2s,border-color .2s;}
+  .cert-modal .close:hover{color:var(--signal);border-color:var(--signal);}
+
   .back-top{position:fixed;bottom:28px;right:28px;z-index:30;width:42px;height:42px;border-radius:50%;border:1px solid var(--hairline);background:var(--surface);color:var(--slate);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s,color .3s,border-color .3s;pointer-events:none;}
   .back-top.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
   .back-top:hover{color:var(--signal);border-color:var(--signal);}
@@ -396,6 +414,7 @@
     <li><a href="#stack">Stack</a></li>
     <li><a href="#tech">Tech</a></li>
     <li><a href="#education">Education</a></li>
+    <li><a href="#certs">Certificates</a></li>
     <li><a href="#learning">Learning</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -410,6 +429,7 @@
   <a href="#stack">Stack</a>
   <a href="#tech">Tech</a>
   <a href="#education">Education</a>
+  <a href="#certs">Certificates</a>
   <a href="#learning">Learning</a>
   <a href="#contact">Contact</a>
 </div>
@@ -888,17 +908,17 @@
         </div>
       </div>
       <div class="edu-item">
-        <div class="year">2024</div>
+        <div class="year">2025</div>
         <div class="info">
-          <h3>Route IT Training Center — Front-End Developer Trainee</h3>
-          <p>Cairo. Intensive front-end development training with HTML, CSS, JavaScript, React.js, and modern frameworks.</p>
+          <h3>Route IT Training Center — Frontend Development Diploma</h3>
+          <p>Cairo. Frontend diploma certified by Route (see <a href="#certs" style="color:var(--signal);border-bottom:1px solid rgba(60,249,126,.3);">certificate ↗</a>). 14 Oct 2025.</p>
         </div>
       </div>
       <div class="edu-item">
-        <div class="year">2024</div>
+        <div class="year">2022</div>
         <div class="info">
-          <h3>ITI — Summer Training</h3>
-          <p>Information Technology Institute. Full-stack web development fundamentals and hands-on projects.</p>
+          <h3>ITI — React Native Development (150 hrs)</h3>
+          <p>Information Technology Institute. ITI Summer Program 15 Aug – 13 Sep 2022. HTML/CSS, ES6, Bootstrap, React, React Native — <a href="#certs" style="color:var(--signal);border-bottom:1px solid rgba(60,249,126,.3);">certificate ↗</a>.</p>
         </div>
       </div>
       <div class="edu-item">
@@ -906,6 +926,33 @@
         <div class="info">
           <h3>Minufiya University — BSc in Computer Science</h3>
           <p>Faculty of Computers and Information. Focus on software engineering and web technologies.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CERTIFICATES ========== -->
+  <section id="certs" class="reveal">
+    <div class="stage">REGISTRY <span>· certificates</span></div>
+    <h2 style="font-size:2.6rem;margin:0 0 14px;font-weight:600;letter-spacing:-.01em;">Certificates</h2>
+    <p style="font-family:var(--f-mono);font-size:.82rem;color:var(--slate);margin:0 0 36px;">Click to view full certificate</p>
+    <div class="certs-grid">
+      <div class="cert-card" data-cert="certs/route-frontend-2025.jpg" role="button" tabindex="0" aria-label="View Route Frontend diploma certificate">
+        <img src="certs/route-frontend-2025.jpg" alt="Route IT Training Center Frontend Diploma certificate" loading="lazy" />
+        <div class="cinfo">
+          <div class="issuer">Route IT Training Center</div>
+          <h3>Frontend Development Diploma</h3>
+          <div class="meta">Issued 14 Oct 2025 · Signed by Ahmed Bahnasy</div>
+          <div class="view">View certificate ↗</div>
+        </div>
+      </div>
+      <div class="cert-card" data-cert="certs/iti-react-native-2022.jpg" role="button" tabindex="0" aria-label="View ITI React Native Development certificate">
+        <img src="certs/iti-react-native-2022.jpg" alt="ITI React Native Development 150hrs certificate" loading="lazy" />
+        <div class="cinfo">
+          <div class="issuer">Information Technology Institute · ITI</div>
+          <h3>React Native Development — 150 hrs</h3>
+          <div class="meta">15 Aug 2022 → 13 Sep 2022 · HTML, ES6, Bootstrap, React, React Native</div>
+          <div class="view">View certificate ↗</div>
         </div>
       </div>
     </div>
@@ -992,6 +1039,11 @@
     </div>
   </section>
 </main>
+
+<div class="cert-modal" id="certModal" role="dialog" aria-modal="true" aria-label="Certificate viewer">
+  <button class="close" aria-label="Close certificate viewer">×</button>
+  <img id="certModalImg" src="" alt="Certificate full view" />
+</div>
 
 <footer>
   <div>&copy; 2026 Mohamed Essam Madyan. Built with plain HTML/CSS/JS.</div>
@@ -1148,6 +1200,23 @@
       });
     });
   }
+
+  // ========== CERTIFICATE MODAL ==========
+  (function(){
+    const modal = document.getElementById('certModal');
+    const img = document.getElementById('certModalImg');
+    if(!modal || !img) return;
+    const close = () => { modal.classList.remove('open'); img.removeAttribute('src'); document.body.style.overflow=''; };
+    const open = (src) => { img.src = src; modal.classList.add('open'); document.body.style.overflow='hidden'; };
+    document.querySelectorAll('.cert-card').forEach(c => {
+      const src = c.getAttribute('data-cert');
+      c.addEventListener('click', () => open(src));
+      c.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); open(src); }});
+    });
+    modal.querySelector('.close').addEventListener('click', close);
+    modal.addEventListener('click', e => { if(e.target===modal) close(); });
+    document.addEventListener('keydown', e => { if(e.key==='Escape') close(); });
+  })();
 
   // ========== BACK TO TOP ==========
   const backBtn = document.querySelector('.back-top');
