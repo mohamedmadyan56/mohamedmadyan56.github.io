@@ -216,9 +216,26 @@
     .portrait-wrap{margin:0 auto;order:-1;max-width:340px;}
   }
 
+  #hero .spotlight{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s ease;background:radial-gradient(500px circle at var(--mx,50%) var(--my,50%), rgba(60,249,126,.07), transparent 42%);z-index:0;}
+  #hero:hover .spotlight{opacity:1;}
+  @media (prefers-reduced-motion:reduce){#hero .spotlight{display:none;}}
+
   .work-list{display:flex;flex-direction:column;}
-  .project{display:grid;grid-template-columns:1fr 260px;gap:36px;align-items:start;padding:40px 0;border-top:1px solid var(--hairline);transition:background .3s ease;}
+  .project{display:grid;grid-template-columns:1fr 340px;gap:36px;align-items:start;padding:40px 0;border-top:1px solid var(--hairline);transition:background .3s ease, transform .3s ease;}
   .project:hover{background:rgba(60,249,126,.02);}
+  .project.featured{border-top:1px solid rgba(60,249,126,.18);background:linear-gradient(180deg, rgba(60,249,126,.03) 0%, transparent 100%);}
+  .badge-live{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--signal);border:1px solid rgba(60,249,126,.35);padding:3px 8px;border-radius:999px;margin-bottom:12px;}
+  .badge-live i{width:6px;height:6px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px var(--signal);animation:pulseDot 1.6s ease-in-out infinite;}
+  @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(.85);}}
+  .browser{border:1px solid var(--hairline);border-radius:8px;overflow:hidden;background:var(--surface);align-self:stretch;display:flex;flex-direction:column;transition:border-color .3s, box-shadow .3s, transform .3s;}
+  .browser:hover{border-color:rgba(60,249,126,.35);box-shadow:0 12px 32px rgba(0,0,0,.35), 0 0 24px rgba(60,249,126,.08);transform:translateY(-2px) rotate(.15deg);}
+  .browser__bar{display:flex;align-items:center;gap:6px;padding:9px 12px;background:#0F141B;border-bottom:1px solid var(--hairline);font-family:var(--f-mono);font-size:.62rem;color:var(--slate);}
+  .browser__dots{display:flex;gap:5px;}
+  .browser__dots i{width:8px;height:8px;border-radius:50%;background:var(--hairline);}
+  .browser__dots i:nth-child(1){background:rgba(60,249,126,.6);}
+  .browser__url{margin-left:auto;opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+  .browser img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top;transition:transform .6s ease;}
+  .browser:hover img{transform:scale(1.02);}
   .project:last-child{border-bottom:1px solid var(--hairline);}
   .project .meta{font-family:var(--f-mono);font-size:.74rem;color:var(--slate);display:flex;gap:16px;margin-bottom:16px;letter-spacing:.02em;flex-wrap:wrap;}
   .project .meta .yr{color:var(--paper);}
@@ -326,8 +343,14 @@
   .contact-form input::placeholder,.contact-form textarea::placeholder{color:var(--slate);opacity:.6;}
   @media (max-width:720px){.contact-grid{grid-template-columns:1fr;}}
 
-  .tech-strip{display:flex;flex-wrap:wrap;gap:16px;padding:20px 0;justify-content:center;}
-  .tech-item{font-family:var(--f-mono);font-size:.82rem;padding:10px 18px;border:1px solid var(--hairline);border-radius:3px;color:var(--slate);transition:color .3s,border-color .3s,transform .3s;}
+  .tech-marquee{overflow:hidden;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);padding:14px 0;position:relative;}
+  .tech-marquee::before,.tech-marquee::after{content:"";position:absolute;top:0;bottom:0;width:60px;pointer-events:none;z-index:1;}
+  .tech-marquee::before{left:0;background:linear-gradient(to right, var(--ink), transparent);}
+  .tech-marquee::after{right:0;background:linear-gradient(to left, var(--ink), transparent);}
+  .tech-track{display:flex;gap:16px;animation:marquee 28s linear infinite;width:max-content;}
+  .tech-track:hover{animation-play-state:paused;}
+  @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+  .tech-item{font-family:var(--f-mono);font-size:.82rem;padding:10px 18px;border:1px solid var(--hairline);border-radius:3px;color:var(--slate);transition:color .3s,border-color .3s,transform .3s;white-space:nowrap;flex:none;}
   .tech-item:hover{color:var(--signal);border-color:var(--signal);transform:translateY(-3px);}
 
   .learning-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
@@ -356,7 +379,7 @@
   .nav-overlay a{font-family:var(--f-display);font-size:1.8rem;color:var(--slate);transition:color .3s;}
   .nav-overlay a:hover{color:var(--signal);}
 
-  .certs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:860px;}
+  .certs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:860px;}
   .cert-card{border:1px solid var(--hairline);border-radius:6px;overflow:hidden;background:var(--surface);cursor:pointer;transition:border-color .3s,transform .3s,box-shadow .3s;}
   .cert-card:hover{border-color:var(--signal);transform:translateY(-3px);box-shadow:0 8px 32px rgba(60,249,126,.12);}
   .cert-card img{display:block;width:100%;height:220px;object-fit:cover;object-position:top;border-bottom:1px solid var(--hairline);transition:filter .3s;}
@@ -439,6 +462,7 @@
 <main id="main">
   <!-- ========== HERO ========== -->
   <section id="hero">
+    <div class="spotlight" aria-hidden="true"></div>
     <div class="hero-grid">
       <div class="hero-content">
         <div class="eyebrow">
@@ -492,8 +516,9 @@
     <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Selected Work</h2>
     <div class="work-list">
 
-      <article class="project">
+      <article class="project featured">
         <div>
+          <div class="badge-live"><i></i> Featured · Live</div>
           <div class="meta">
             <span class="yr">2026</span>
             <span>Live Production</span>
@@ -518,21 +543,10 @@
             <a href="https://xcar.autos/" target="_blank" rel="noopener noreferrer">Live Site ↗</a>
           </div>
         </div>
-        <div class="schematic">
-          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
-            <line class="wire" x1="60" y1="45" x2="120" y2="80"/>
-            <line class="wire" x1="180" y1="45" x2="120" y2="80"/>
-            <line class="wire" x1="120" y1="110" x2="120" y2="140"/>
-            <rect class="node" x="30" y="30" width="60" height="30" rx="2"/>
-            <text class="lbl" x="60" y="48" text-anchor="middle">LISTING</text>
-            <rect class="node hot" x="90" y="80" width="60" height="30" rx="2"/>
-            <text class="lbl" x="120" y="98" text-anchor="middle">INSPECT</text>
-            <rect class="node" x="150" y="30" width="60" height="30" rx="2"/>
-            <text class="lbl" x="180" y="48" text-anchor="middle">REPORT</text>
-            <circle class="dot" cx="120" cy="140" r="3"/>
-            <text class="lbl" x="132" y="144" text-anchor="start">SALE</text>
-          </svg>
-        </div>
+        <a href="https://xcar.autos/" target="_blank" rel="noopener noreferrer" class="browser" aria-label="Open XCar live site">
+          <div class="browser__bar"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">xcar.autos</span></div>
+          <img src="previews/xcar.jpg" alt="XCar live preview" loading="lazy" />
+        </a>
       </article>
 
       <article class="project">
@@ -577,8 +591,9 @@
         </div>
       </article>
 
-      <article class="project">
+      <article class="project featured">
         <div>
+          <div class="badge-live"><i></i> Featured · Live</div>
           <div class="meta">
             <span class="yr">2026</span>
             <span>Live Production</span>
@@ -605,24 +620,10 @@
             <a href="https://github.com/mohamedmadyan56" target="_blank" rel="noopener noreferrer">GitHub</a>
           </div>
         </div>
-        <div class="schematic">
-          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
-            <line class="wire" x1="60" y1="45" x2="120" y2="80"/>
-            <line class="wire" x1="180" y1="45" x2="120" y2="80"/>
-            <line class="wire" x1="120" y1="110" x2="60" y2="145"/>
-            <line class="wire" x1="120" y1="110" x2="180" y2="145"/>
-            <rect class="node" x="30" y="30" width="60" height="30" rx="2"/>
-            <text class="lbl" x="60" y="48" text-anchor="middle">ADMIN</text>
-            <rect class="node" x="150" y="30" width="60" height="30" rx="2"/>
-            <text class="lbl" x="180" y="48" text-anchor="middle">EMPLOYEE</text>
-            <rect class="node hot" x="90" y="80" width="60" height="30" rx="2"/>
-            <text class="lbl" x="120" y="98" text-anchor="middle">RBAC</text>
-            <rect class="node" x="30" y="130" width="60" height="30" rx="2"/>
-            <text class="lbl" x="60" y="148" text-anchor="middle">PILGRIMS</text>
-            <rect class="node" x="150" y="130" width="60" height="30" rx="2"/>
-            <text class="lbl" x="180" y="148" text-anchor="middle">DOCS</text>
-          </svg>
-        </div>
+        <a href="https://mayorca-travels.vercel.app/" target="_blank" rel="noopener noreferrer" class="browser" aria-label="Open Mayorca Travel live site">
+          <div class="browser__bar"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">mayorca-travels.vercel.app</span></div>
+          <img src="previews/mayorca.jpg" alt="Mayorca Travel ERP login preview" loading="lazy" />
+        </a>
       </article>
 
       <article class="project">
@@ -834,23 +835,41 @@
   <section id="tech" class="reveal">
     <div class="stage">STACK <span>· technologies</span></div>
     <h2 style="font-size:2.6rem;margin:0 0 56px;font-weight:600;letter-spacing:-.01em;">Technologies I Work With</h2>
-    <div class="tech-strip">
-      <span class="tech-item">Next.js</span>
-      <span class="tech-item">React.js</span>
-      <span class="tech-item">TypeScript</span>
-      <span class="tech-item">Node.js</span>
-      <span class="tech-item">Express.js</span>
-      <span class="tech-item">Nest.js</span>
-      <span class="tech-item">MongoDB</span>
-      <span class="tech-item">PostgreSQL</span>
-      <span class="tech-item">Prisma ORM</span>
-      <span class="tech-item">Mongoose</span>
-      <span class="tech-item">JWT</span>
-      <span class="tech-item">Socket.io</span>
-      <span class="tech-item">Docker</span>
-      <span class="tech-item">Git</span>
-      <span class="tech-item">Tailwind CSS</span>
-      <span class="tech-item">Redux</span>
+    <div class="tech-marquee" aria-hidden="true">
+      <div class="tech-track">
+        <span class="tech-item">Next.js</span>
+        <span class="tech-item">React.js</span>
+        <span class="tech-item">TypeScript</span>
+        <span class="tech-item">Node.js</span>
+        <span class="tech-item">Express.js</span>
+        <span class="tech-item">Nest.js</span>
+        <span class="tech-item">MongoDB</span>
+        <span class="tech-item">PostgreSQL</span>
+        <span class="tech-item">Prisma ORM</span>
+        <span class="tech-item">Mongoose</span>
+        <span class="tech-item">JWT</span>
+        <span class="tech-item">Socket.io</span>
+        <span class="tech-item">Docker</span>
+        <span class="tech-item">Git</span>
+        <span class="tech-item">Tailwind CSS</span>
+        <span class="tech-item">Redux</span>
+        <span class="tech-item">Next.js</span>
+        <span class="tech-item">React.js</span>
+        <span class="tech-item">TypeScript</span>
+        <span class="tech-item">Node.js</span>
+        <span class="tech-item">Express.js</span>
+        <span class="tech-item">Nest.js</span>
+        <span class="tech-item">MongoDB</span>
+        <span class="tech-item">PostgreSQL</span>
+        <span class="tech-item">Prisma ORM</span>
+        <span class="tech-item">Mongoose</span>
+        <span class="tech-item">JWT</span>
+        <span class="tech-item">Socket.io</span>
+        <span class="tech-item">Docker</span>
+        <span class="tech-item">Git</span>
+        <span class="tech-item">Tailwind CSS</span>
+        <span class="tech-item">Redux</span>
+      </div>
     </div>
   </section>
 
@@ -903,7 +922,7 @@
       <div class="edu-item">
         <div class="year">2026</div>
         <div class="info">
-          <h3>NTI — Open Source Hire Ready Program</h3>
+          <h3>NTI — Open Source Hire Ready Program <span style="font-family:var(--f-mono);font-size:.68rem;color:var(--signal);border:1px solid rgba(60,249,126,.3);padding:2px 7px;border-radius:999px;vertical-align:middle;margin-left:8px;letter-spacing:.04em;">EXPECTED</span></h3>
           <p>National Telecommunication Institute. Intensive 4-month scholarship program in Full-Stack development with React.js, Next.js, Node.js, and modern web technologies.</p>
         </div>
       </div>
@@ -953,6 +972,18 @@
           <h3>React Native Development — 150 hrs</h3>
           <div class="meta">15 Aug 2022 → 13 Sep 2022 · HTML, ES6, Bootstrap, React, React Native</div>
           <div class="view">View certificate ↗</div>
+        </div>
+      </div>
+      <div class="cert-card" style="opacity:.62;cursor:default;" aria-label="NTI certificate pending">
+        <div style="height:220px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, #0F141B 0%, #161B22 100%);border-bottom:1px solid var(--hairline);font-family:var(--f-mono);font-size:.78rem;color:var(--slate);flex-direction:column;gap:10px;">
+          <span style="width:42px;height:42px;border-radius:50%;border:1px dashed var(--slate);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">◌</span>
+          <span>Certificate pending — NTI</span>
+        </div>
+        <div class="cinfo">
+          <div class="issuer">National Telecommunication Institute · NTI</div>
+          <h3>Full-Stack Development — Open Source</h3>
+          <div class="meta">4-month scholarship · Hire-Ready Program · Expected 2026</div>
+          <div class="view" style="color:var(--slate);">Awaiting issuance</div>
         </div>
       </div>
     </div>
@@ -1200,6 +1231,17 @@
       });
     });
   }
+
+  // ========== HERO SPOTLIGHT ==========
+  (function(){
+    const hero = document.getElementById('hero');
+    if(!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    hero.addEventListener('mousemove', e => {
+      const r = hero.getBoundingClientRect();
+      hero.style.setProperty('--mx', ((e.clientX - r.left)/r.width*100)+'%');
+      hero.style.setProperty('--my', ((e.clientY - r.top)/r.height*100)+'%');
+    });
+  })();
 
   // ========== CERTIFICATE MODAL ==========
   (function(){
