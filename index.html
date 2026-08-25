@@ -221,21 +221,33 @@
   @media (prefers-reduced-motion:reduce){#hero .spotlight{display:none;}}
 
   .work-list{display:flex;flex-direction:column;}
-  .project{display:grid;grid-template-columns:1fr 340px;gap:36px;align-items:start;padding:40px 0;border-top:1px solid var(--hairline);transition:background .3s ease, transform .3s ease;}
+  .project{display:grid;grid-template-columns:1fr 320px;gap:36px;align-items:start;padding:40px 0;border-top:1px solid var(--hairline);transition:background .3s ease, transform .3s ease;}
   .project:hover{background:rgba(60,249,126,.02);}
   .project.featured{border-top:1px solid rgba(60,249,126,.18);background:linear-gradient(180deg, rgba(60,249,126,.03) 0%, transparent 100%);}
   .badge-live{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--signal);border:1px solid rgba(60,249,126,.35);padding:3px 8px;border-radius:999px;margin-bottom:12px;}
   .badge-live i{width:6px;height:6px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px var(--signal);animation:pulseDot 1.6s ease-in-out infinite;}
   @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(.85);}}
-  .browser{border:1px solid var(--hairline);border-radius:8px;overflow:hidden;background:var(--surface);align-self:stretch;display:flex;flex-direction:column;transition:border-color .3s, box-shadow .3s, transform .3s;}
-  .browser:hover{border-color:rgba(60,249,126,.35);box-shadow:0 12px 32px rgba(0,0,0,.35), 0 0 24px rgba(60,249,126,.08);transform:translateY(-2px) rotate(.15deg);}
-  .browser__bar{display:flex;align-items:center;gap:6px;padding:9px 12px;background:#0F141B;border-bottom:1px solid var(--hairline);font-family:var(--f-mono);font-size:.62rem;color:var(--slate);}
-  .browser__dots{display:flex;gap:5px;}
-  .browser__dots i{width:8px;height:8px;border-radius:50%;background:var(--hairline);}
-  .browser__dots i:nth-child(1){background:rgba(60,249,126,.6);}
-  .browser__url{margin-left:auto;opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
-  .browser img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top;transition:transform .6s ease;}
-  .browser:hover img{transform:scale(1.02);}
+  .schematic{background:var(--surface);border:1px solid var(--hairline);border-radius:8px;overflow:hidden;align-self:stretch;display:flex;flex-direction:column;transition:border-color .3s, box-shadow .3s, transform .3s;position:relative;}
+  .schematic:hover{border-color:rgba(60,249,126,.32);box-shadow:0 8px 28px rgba(0,0,0,.35), 0 0 20px rgba(60,249,126,.07);transform:translateY(-2px);}
+  .schematic__head{display:flex;align-items:center;gap:6px;padding:9px 12px;background:#0F141B;border-bottom:1px solid var(--hairline);font-family:var(--f-mono);font-size:.62rem;color:var(--slate);letter-spacing:.06em;}
+  .schematic__head i{width:8px;height:8px;border-radius:50%;background:var(--hairline);}
+  .schematic__head i:first-child{background:rgba(60,249,126,.55);}
+  .schematic__body{padding:16px 14px;position:relative;flex:1;display:flex;align-items:center;justify-content:center;background:
+      radial-gradient(rgba(60,249,126,.06) 1px, transparent 1px),
+      linear-gradient(rgba(60,249,126,.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(60,249,126,.02) 1px, transparent 1px);
+    background-size:22px 22px, 22px 22px, 22px 22px;}
+  .schematic svg{display:block;width:100%;height:auto;}
+  .schematic .lbl{font-family:var(--f-mono);font-size:8.5px;fill:var(--slate);letter-spacing:.05em;font-weight:500;}
+  .schematic .lbl-small{font-size:7px;fill:var(--slate);opacity:.7;}
+  .schematic .wire{stroke:var(--hairline);stroke-width:1;stroke-linecap:round;}
+  .schematic .wire-hot{stroke:rgba(60,249,126,.45);stroke-width:1.2;stroke-dasharray:6 4;animation:flow 1.8s linear infinite;}
+  @keyframes flow{to{stroke-dashoffset:-10;}}
+  .schematic .node{fill:var(--ink);stroke:var(--slate);stroke-width:1.1;rx:3;}
+  .schematic .node.hot{stroke:var(--signal);fill:rgba(60,249,126,.09);filter:drop-shadow(0 0 6px rgba(60,249,126,.25));}
+  .schematic .dot{fill:var(--signal);filter:drop-shadow(0 0 4px var(--signal));}
+  .schematic .dot-pulse{fill:var(--signal);animation:dotPulse 1.8s ease-in-out infinite;}
+  @keyframes dotPulse{0%,100%{r:2.5;opacity:1}50%{r:3.8;opacity:.7}}
   .project:last-child{border-bottom:1px solid var(--hairline);}
   .project .meta{font-family:var(--f-mono);font-size:.74rem;color:var(--slate);display:flex;gap:16px;margin-bottom:16px;letter-spacing:.02em;flex-wrap:wrap;}
   .project .meta .yr{color:var(--paper);}
@@ -543,10 +555,29 @@
             <a href="https://xcar.autos/" target="_blank" rel="noopener noreferrer">Live Site ↗</a>
           </div>
         </div>
-        <a href="https://xcar.autos/" target="_blank" rel="noopener noreferrer" class="browser" aria-label="Open XCar live site">
-          <div class="browser__bar"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">xcar.autos</span></div>
-          <img src="previews/xcar.jpg" alt="XCar live preview" loading="lazy" />
-        </a>
+        <div class="schematic">
+          <div class="schematic__head"><i></i><i></i><i></i><span style="margin-left:auto;">ARCH · marketplace</span></div>
+          <div class="schematic__body">
+          <svg viewBox="0 0 280 190" xmlns="http://www.w3.org/2000/svg">
+            <!-- grid wires -->
+            <line class="wire" x1="70" y1="52" x2="140" y2="92"/>
+            <line class="wire" x1="210" y1="52" x2="140" y2="92"/>
+            <line class="wire-hot" x1="140" y1="122" x2="140" y2="152"/>
+            <!-- nodes -->
+            <rect class="node" x="30" y="34" width="80" height="34" rx="4"/>
+            <text class="lbl" x="70" y="51" text-anchor="middle">LISTING</text>
+            <text class="lbl-small" x="70" y="60" text-anchor="middle">200 pts</text>
+            <rect class="node" x="170" y="34" width="80" height="34" rx="4"/>
+            <text class="lbl" x="210" y="51" text-anchor="middle">REPORT</text>
+            <text class="lbl-small" x="210" y="60" text-anchor="middle">PDF</text>
+            <rect class="node hot" x="95" y="92" width="90" height="34" rx="4"/>
+            <text class="lbl" x="140" y="111" text-anchor="middle">INSPECT</text>
+            <circle class="dot-pulse" cx="140" cy="162" r="3.2"/>
+            <text class="lbl" x="150" y="166" text-anchor="start">SALE ✓</text>
+            <text class="lbl-small" x="140" y="183" text-anchor="middle">xcar.autos</text>
+          </svg>
+          </div>
+        </div>
       </article>
 
       <article class="project">
@@ -576,18 +607,24 @@
           </div>
         </div>
         <div class="schematic">
-          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
-            <line class="wire" x1="60" y1="50" x2="120" y2="90"/>
-            <line class="wire" x1="180" y1="50" x2="120" y2="90"/>
-            <line class="wire" x1="120" y1="120" x2="120" y2="140"/>
-            <rect class="node" x="30" y="35" width="60" height="30" rx="2"/>
-            <text class="lbl" x="60" y="53" text-anchor="middle">CLIENT</text>
-            <rect class="node" x="150" y="35" width="60" height="30" rx="2"/>
-            <text class="lbl" x="180" y="53" text-anchor="middle">CRAFTSMAN</text>
-            <rect class="node hot" x="90" y="90" width="60" height="30" rx="2"/>
-            <text class="lbl" x="120" y="108" text-anchor="middle">BOOKING</text>
-            <circle class="dot" cx="120" cy="140" r="3"/>
+          <div class="schematic__head"><i></i><i></i><i></i><span style="margin-left:auto;">ARCH · marketplace</span></div>
+          <div class="schematic__body">
+          <svg viewBox="0 0 280 190" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="70" y1="42" x2="140" y2="78"/>
+            <line class="wire" x1="210" y1="42" x2="140" y2="78"/>
+            <line class="wire-hot" x1="140" y1="110" x2="140" y2="144"/>
+            <rect class="node" x="30" y="24" width="80" height="34" rx="4"/>
+            <text class="lbl" x="70" y="42" text-anchor="middle">CLIENT</text>
+            <text class="lbl-small" x="70" y="51" text-anchor="middle">Next.js</text>
+            <rect class="node" x="170" y="24" width="80" height="34" rx="4"/>
+            <text class="lbl" x="210" y="42" text-anchor="middle">CRAFTSMAN</text>
+            <text class="lbl-small" x="210" y="51" text-anchor="middle">dashboard</text>
+            <rect class="node hot" x="95" y="78" width="90" height="34" rx="4"/>
+            <text class="lbl" x="140" y="97" text-anchor="middle">BOOKING</text>
+            <circle class="dot-pulse" cx="140" cy="156" r="2.8"/>
+            <text class="lbl" x="150" y="160" text-anchor="start">Socket ✓</text>
           </svg>
+          </div>
         </div>
       </article>
 
@@ -620,10 +657,29 @@
             <a href="https://github.com/mohamedmadyan56" target="_blank" rel="noopener noreferrer">GitHub</a>
           </div>
         </div>
-        <a href="https://mayorca-travels.vercel.app/" target="_blank" rel="noopener noreferrer" class="browser" aria-label="Open Mayorca Travel live site">
-          <div class="browser__bar"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">mayorca-travels.vercel.app</span></div>
-          <img src="previews/mayorca.jpg" alt="Mayorca Travel ERP login preview" loading="lazy" />
-        </a>
+        <div class="schematic">
+          <div class="schematic__head"><i></i><i></i><i></i><span style="margin-left:auto;">ARCH · erp / rbac</span></div>
+          <div class="schematic__body">
+          <svg viewBox="0 0 280 190" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="70" y1="38" x2="140" y2="72"/>
+            <line class="wire" x1="210" y1="38" x2="140" y2="72"/>
+            <line class="wire" x1="140" y1="105" x2="70" y2="138"/>
+            <line class="wire-hot" x1="140" y1="105" x2="210" y2="138"/>
+            <rect class="node" x="30" y="22" width="80" height="32" rx="4"/>
+            <text class="lbl" x="70" y="42" text-anchor="middle">ADMIN</text>
+            <rect class="node" x="170" y="22" width="80" height="32" rx="4"/>
+            <text class="lbl" x="210" y="42" text-anchor="middle">EMPLOYEE</text>
+            <rect class="node hot" x="95" y="72" width="90" height="32" rx="4"/>
+            <text class="lbl" x="140" y="91" text-anchor="middle">RBAC</text>
+            <text class="lbl-small" x="140" y="100" text-anchor="middle">JWT · perms</text>
+            <rect class="node" x="30" y="138" width="80" height="32" rx="4"/>
+            <text class="lbl" x="70" y="157" text-anchor="middle">PILGRIMS</text>
+            <rect class="node" x="170" y="138" width="80" height="32" rx="4"/>
+            <text class="lbl" x="210" y="157" text-anchor="middle">DOCS</text>
+            <circle class="dot-pulse" cx="140" cy="122" r="2.8"/>
+          </svg>
+          </div>
+        </div>
       </article>
 
       <article class="project">
@@ -653,15 +709,24 @@
           </div>
         </div>
         <div class="schematic">
-          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
-            <line class="wire" x1="120" y1="30" x2="120" y2="60"/>
-            <line class="wire" x1="120" y1="90" x2="120" y2="120"/>
-            <rect class="node hot" x="80" y="60" width="80" height="30" rx="2"/>
-            <text class="lbl" x="120" y="78" text-anchor="middle">GROQ API</text>
-            <circle class="dot" cx="120" cy="30" r="3"/>
-            <rect class="node" x="80" y="120" width="80" height="30" rx="2"/>
-            <text class="lbl" x="120" y="138" text-anchor="middle">MONGODB</text>
+          <div class="schematic__head"><i></i><i></i><i></i><span style="margin-left:auto;">ARCH · ai / groq</span></div>
+          <div class="schematic__body">
+          <svg viewBox="0 0 280 190" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="70" y1="38" x2="140" y2="70"/>
+            <line class="wire" x1="210" y1="38" x2="140" y2="70"/>
+            <line class="wire-hot" x1="140" y1="102" x2="140" y2="134"/>
+            <rect class="node" x="30" y="22" width="80" height="32" rx="4"/>
+            <text class="lbl" x="70" y="42" text-anchor="middle">CLIENT</text>
+            <rect class="node" x="170" y="22" width="80" height="32" rx="4"/>
+            <text class="lbl" x="210" y="42" text-anchor="middle">CHAT UI</text>
+            <rect class="node hot" x="95" y="70" width="90" height="32" rx="4"/>
+            <text class="lbl" x="140" y="89" text-anchor="middle">GROQ API</text>
+            <circle class="dot-pulse" cx="140" cy="18" r="2.8"/>
+            <rect class="node" x="95" y="134" width="90" height="32" rx="4"/>
+            <text class="lbl" x="140" y="153" text-anchor="middle">MONGODB</text>
+            <text class="lbl-small" x="140" y="162" text-anchor="middle">context</text>
           </svg>
+          </div>
         </div>
       </article>
 
@@ -692,18 +757,24 @@
           </div>
         </div>
         <div class="schematic">
-          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
-            <line class="wire" x1="60" y1="60" x2="120" y2="90"/>
-            <line class="wire" x1="180" y1="60" x2="120" y2="90"/>
-            <line class="wire" x1="120" y1="90" x2="120" y2="120"/>
-            <rect class="node" x="30" y="45" width="60" height="30" rx="2"/>
-            <text class="lbl" x="60" y="63" text-anchor="middle">AUTH</text>
-            <rect class="node hot" x="90" y="75" width="60" height="30" rx="2"/>
-            <text class="lbl" x="120" y="93" text-anchor="middle">API</text>
-            <rect class="node" x="150" y="45" width="60" height="30" rx="2"/>
-            <text class="lbl" x="180" y="63" text-anchor="middle">SOCKET</text>
-            <circle class="dot" cx="120" cy="120" r="3"/>
+          <div class="schematic__head"><i></i><i></i><i></i><span style="margin-left:auto;">ARCH · rest / jwt</span></div>
+          <div class="schematic__body">
+          <svg viewBox="0 0 280 190" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="70" y1="42" x2="140" y2="78"/>
+            <line class="wire" x1="210" y1="42" x2="140" y2="78"/>
+            <line class="wire-hot" x1="140" y1="110" x2="140" y2="144"/>
+            <rect class="node" x="30" y="24" width="80" height="34" rx="4"/>
+            <text class="lbl" x="70" y="42" text-anchor="middle">AUTH</text>
+            <text class="lbl-small" x="70" y="51" text-anchor="middle">JWT</text>
+            <rect class="node" x="170" y="24" width="80" height="34" rx="4"/>
+            <text class="lbl" x="210" y="42" text-anchor="middle">SOCKET</text>
+            <text class="lbl-small" x="210" y="51" text-anchor="middle">real-time</text>
+            <rect class="node hot" x="95" y="78" width="90" height="34" rx="4"/>
+            <text class="lbl" x="140" y="97" text-anchor="middle">API</text>
+            <circle class="dot-pulse" cx="140" cy="156" r="2.8"/>
+            <text class="lbl" x="150" y="160" text-anchor="start">posts · likes</text>
           </svg>
+          </div>
         </div>
       </article>
 
@@ -733,16 +804,24 @@
           </div>
         </div>
         <div class="schematic">
-          <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
-            <line class="wire" x1="120" y1="40" x2="60" y2="90"/>
-            <line class="wire" x1="120" y1="40" x2="180" y2="90"/>
-            <rect class="node hot" x="90" y="25" width="60" height="30" rx="2"/>
-            <text class="lbl" x="120" y="43" text-anchor="middle">SERVER</text>
-            <rect class="node" x="30" y="90" width="60" height="30" rx="2"/>
-            <text class="lbl" x="60" y="108" text-anchor="middle">INVOICE</text>
-            <rect class="node" x="150" y="90" width="60" height="30" rx="2"/>
-            <text class="lbl" x="180" y="108" text-anchor="middle">INVENTORY</text>
+          <div class="schematic__head"><i></i><i></i><i></i><span style="margin-left:auto;">ARCH · pos / retail</span></div>
+          <div class="schematic__body">
+          <svg viewBox="0 0 280 190" xmlns="http://www.w3.org/2000/svg">
+            <line class="wire" x1="140" y1="32" x2="70" y2="72"/>
+            <line class="wire" x1="140" y1="32" x2="210" y2="72"/>
+            <line class="wire-hot" x1="70" y1="105" x2="70" y2="134"/>
+            <line class="wire" x1="210" y1="105" x2="210" y2="134"/>
+            <rect class="node hot" x="95" y="16" width="90" height="32" rx="4"/>
+            <text class="lbl" x="140" y="35" text-anchor="middle">SERVER</text>
+            <rect class="node" x="30" y="72" width="80" height="34" rx="4"/>
+            <text class="lbl" x="70" y="91" text-anchor="middle">INVOICE</text>
+            <rect class="node" x="170" y="72" width="80" height="34" rx="4"/>
+            <text class="lbl" x="210" y="91" text-anchor="middle">INVENTORY</text>
+            <text class="lbl-small" x="210" y="100" text-anchor="middle">1000+ items</text>
+            <circle class="dot-pulse" cx="70" cy="146" r="2.8"/>
+            <circle class="dot" cx="210" cy="146" r="2.5"/>
           </svg>
+          </div>
         </div>
       </article>
 
